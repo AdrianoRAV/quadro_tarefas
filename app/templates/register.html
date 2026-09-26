@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Cadastro{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <h3 class="text-center mb-4">
+                    <i class="bi bi-person-plus text-primary"></i> Criar Conta
+                </h3>
+
+                {% if is_first_user %}
+                <div class="alert alert-success small">
+                    <i class="bi bi-star-fill"></i>
+                    <strong>Você é o primeiro usuário!</strong>
+                    Sua conta será criada automaticamente como <b>Administrador</b>.
+                </div>
+                {% else %}
+                <div class="alert alert-info small">
+                    <i class="bi bi-info-circle"></i>
+                    Após o cadastro, um administrador precisa <b>aprovar sua conta</b>
+                    antes do primeiro login.
+                </div>
+                {% endif %}
+
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Usuário</label>
+                        <input type="text" name="username" class="form-control" required autofocus>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Senha</label>
+                        <input type="password" name="password" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirmar Senha</label>
+                        <input type="password" name="confirm_password" class="form-control" required>
+                    </div>
+                    <button class="btn btn-primary w-100">Cadastrar</button>
+                </form>
+
+                <hr>
+                <p class="text-center mb-0">
+                    Já tem conta? <a href="{{ url_for('auth.login') }}">Entrar</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

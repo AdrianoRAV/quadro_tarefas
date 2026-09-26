@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block title %}Relatório{% endblock %}
+
+{% block content %}
+<h3 class="mb-4"><i class="bi bi-bar-chart"></i> Relatório de Tarefas</h3>
+<div class="dropdown mb-3 text-end">
+        <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            <i class="bi bi-download"></i> Baixar Relatório
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <a class="dropdown-item" href="{{ url_for('reports.export_csv') }}">
+                    <i class="bi bi-filetype-csv text-success"></i> CSV (.csv)
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{ url_for('reports.export_xlsx') }}">
+                    <i class="bi bi-file-earmark-excel text-success"></i> Excel (.xlsx)
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{ url_for('reports.export_pdf') }}">
+                    <i class="bi bi-file-earmark-pdf text-danger"></i> PDF (.pdf)
+                </a>
+            </li>
+        </ul>
+    </div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-center border-secondary">
+            <div class="card-body">
+                <h2 class="text-secondary">{{ by_status.todo }}</h2>
+                <p class="mb-0"><i class="bi bi-list-task"></i> A Fazer</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-primary">
+            <div class="card-body">
+                <h2 class="text-primary">{{ by_status.doing }}</h2>
+                <p class="mb-0"><i class="bi bi-play-circle"></i> Fazendo</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-success">
+            <div class="card-body">
+                <h2 class="text-success">{{ by_status.done }}</h2>
+                <p class="mb-0"><i class="bi bi-check-circle"></i> Concluído</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-warning">
+            <div class="card-body">
+                <h2 class="text-warning">{{ by_status.adjust }}</h2>
+                <p class="mb-0"><i class="bi bi-tools"></i> Ajustes</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5>Total de Tarefas</h5>
+                <h2>{{ total }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5>Por Prioridade</h5>
+                <div class="d-flex justify-content-around">
+                    <div class="text-center">
+                        <span class="badge bg-danger fs-6">{{ by_priority.alta }}</span>
+                        <div>Alta</div>
+                    </div>
+                    <div class="text-center">
+                        <span class="badge bg-warning text-dark fs-6">{{ by_priority.media }}</span>
+                        <div>Média</div>
+                    </div>
+                    <div class="text-center">
+                        <span class="badge bg-info text-dark fs-6">{{ by_priority.baixa }}</span>
+                        <div>Baixa</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header"><h5 class="mb-0"><i class="bi bi-people-fill"></i> Tarefas por Responsável</h5></div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>Responsável</th>
+                                <th>Total</th>
+                                <th>A Fazer</th>
+                                <th>Fazendo</th>
+                                <th>Concluído</th>
+                                <th>Ajustes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for name, data in grouped.items() %}
+                            <tr>
+                                <td><i class="bi bi-person-fill"></i> {{ name }}</td>
+                                <td><strong>{{ data.total }}</strong></td>
+                                <td>{{ data.todo }}</td>
+                                <td>{{ data.doing }}</td>
+                                <td>{{ data.done }}</td>
+                                <td>{{ data.adjust }}</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="6" class="text-center text-muted">Nenhuma tarefa cadastrada.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header"><h5 class="mb-0"><i class="bi bi-person-plus"></i> Tarefas Criadas por Usuário</h5></div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>Usuário</th>
+                                <th>Tarefas criadas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for name, qty in creators.items() %}
+                            <tr>
+                                <td><i class="bi bi-person-circle"></i> {{ name }}</td>
+                                <td><strong>{{ qty }}</strong></td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="2" class="text-center text-muted">Sem dados.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><h5 class="mb-0">Todas as Tarefas</h5></div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Título</th>
+                        <th>Status</th>
+                        <th>Prioridade</th>
+                        <th>Criado por</th>
+                        <th>Responsável</th>
+                        <th>Criada em</th>
+                        <th>Concluída em</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                    <tr>
+                        <td>{{ task.id }}</td>
+                        <td>{{ task.title }}</td>
+                        <td>
+                            <span class="badge bg-{% if task.status == 'todo' %}secondary{% elif task.status == 'doing' %}primary{% elif task.status == 'done' %}success{% else %}warning text-dark{% endif %}">
+                                {{ {'todo':'A Fazer','doing':'Fazendo','done':'Concluído','adjust':'Ajustes'}[task.status] }}
+                            </span>
+                        </td>
+                        <td>{{ task.priority|capitalize }}</td>
+                        <td>{{ task.owner.username }}</td>
+                        <td>
+                            {% if task.assignee %}
+                                <span class="badge bg-primary-subtle text-primary-emphasis border border-primary-subtle">
+                                    <i class="bi bi-person-fill"></i> {{ task.assignee.username }}
+                                </span>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ task.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>{{ task.completed_at.strftime('%d/%m/%Y %H:%M') if task.completed_at else '-' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="8" class="text-center text-muted">Nenhuma tarefa cadastrada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

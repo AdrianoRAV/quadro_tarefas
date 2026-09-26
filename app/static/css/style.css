@@ -1,0 +1,128 @@
+.kanban-board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    min-height: calc(100vh - 180px);
+}
+
+@media (max-width: 1200px) {
+    .kanban-board { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 576px) {
+    .kanban-board { grid-template-columns: 1fr; }
+}
+
+.kanban-column {
+    background: #f4f5f7;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.kanban-column-header {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+}
+
+.kanban-column-body {
+    padding: 10px;
+    min-height: 200px;
+    flex: 1;
+    overflow-y: auto;
+    max-height: calc(100vh - 260px);
+}
+
+.kanban-column-body.drag-over {
+    background: #e3f2fd;
+    border: 2px dashed #2196f3;
+}
+
+.task-card {
+    background: #fff;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    cursor: grab;
+    transition: box-shadow 0.2s, transform 0.2s;
+    border-left: 4px solid #ccc;
+}
+
+.task-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-1px);
+}
+
+.task-card[data-priority="alta"] { border-left-color: #dc3545; }
+.task-card[data-priority="media"] { border-left-color: #ffc107; }
+.task-card[data-priority="baixa"] { border-left-color: #17a2b8; }
+
+.task-card.task-mine {
+    background: #f0fdf4;
+    box-shadow: 0 1px 3px rgba(25, 135, 84, 0.25);
+}
+
+.task-card.sortable-ghost {
+    opacity: 0.4;
+    background: #e3f2fd;
+}
+
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.task-title {
+    font-weight: 500;
+    color: #333;
+    word-break: break-word;
+}
+
+.task-desc {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 4px;
+    word-break: break-word;
+}
+
+.task-assignee {
+    font-size: 0.78rem;
+}
+
+.task-assignee .badge {
+    font-weight: 500;
+    padding: 3px 8px;
+}
+
+.task-footer {
+    margin-top: 8px;
+    font-size: 0.72rem;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 6px;
+}
+
+.badge-sm {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+}
+
+.online-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #28a745;
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2); }
+    50%      { box-shadow: 0 0 0 5px rgba(40, 167, 69, 0.05); }
+}

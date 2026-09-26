@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}Painel Admin{% endblock %}
+
+{% block content %}
+<h3 class="mb-4"><i class="bi bi-shield-lock-fill"></i> Painel do Administrador</h3>
+
+<!-- Estatísticas -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-center border-primary">
+            <div class="card-body">
+                <h2 class="text-primary">{{ stats.total_users }}</h2>
+                <p class="mb-0"><i class="bi bi-people-fill"></i> Usuários</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-warning">
+            <div class="card-body">
+                <h2 class="text-warning">{{ stats.pending }}</h2>
+                <p class="mb-0"><i class="bi bi-hourglass-split"></i> Pendentes</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-success">
+            <div class="card-body">
+                <h2 class="text-success">{{ stats.approved }}</h2>
+                <p class="mb-0"><i class="bi bi-check-circle"></i> Aprovados</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-danger">
+            <div class="card-body">
+                <h2 class="text-danger">{{ stats.admins }}</h2>
+                <p class="mb-0"><i class="bi bi-shield-fill"></i> Admins</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pendentes -->
+<div class="card mb-4">
+    <div class="card-header bg-warning text-dark">
+        <h5 class="mb-0">
+            <i class="bi bi-hourglass-split"></i> Aguardando aprovação
+            <span class="badge bg-dark">{{ pending|length }}</span>
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        {% if pending %}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Usuário</th>
+                        <th>Email</th>
+                        <th>Cadastrado em</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in pending %}
+                    <tr>
+                        <td><i class="bi bi-person-fill"></i> {{ u.username }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ u.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td class="text-end">
+                            <form method="POST" action="{{ url_for('admin.approve_user', user_id=u.id) }}" class="d-inline">
+                                <button class="btn btn-sm btn-success">
+                                    <i class="bi bi-check-circle"></i> Aprovar
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ url_for('admin.reject_user', user_id=u.id) }}"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Remover o usuário {{ u.username }}?');">
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-x-circle"></i> Rejeitar
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center p-3 mb-0">
+            <i class="bi bi-inbox"></i> Nenhum cadastro pendente.
+        </p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Aprovados -->
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0">
+            <i class="bi bi-people-fill"></i> Usuários aprovados
+            <span class="badge bg-light text-dark">{{ approved|length }}</span>
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Usuário</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Aprovado em</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in approved %}
+                    <tr>
+                        <td>
+                            <i class="bi bi-person-fill"></i>
+                            <strong>{{ u.username }}</strong>
+                            {% if u.id == current_user.id %}<small class="text-muted">(você)</small>{% endif %}
+                        </td>
+                        <td>{{ u.email }}</td>
+                        <td>
+                            {% if u.is_admin %}
+                                <span class="badge bg-danger"><i class="bi bi-shield-fill"></i> Admin</span>
+                            {% else %}
+                                <span class="badge bg-primary">Usuário</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ u.approved_at.strftime('%d/%m/%Y %H:%M') if u.approved_at else '—' }}</td>
+                        <td class="text-end">
+                            {% if u.id != current_user.id %}
+                            <form method="POST" action="{{ url_for('admin.toggle_admin', user_id=u.id) }}" class="d-inline">
+                                {% if u.is_admin %}
+                                <button class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-arrow-down-circle"></i> Remover admin
+                                </button>
+                                {% else %}
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-shield-plus"></i> Tornar admin
+                                </button>
+                                {% endif %}
+                            </form>
+                            <form method="POST" action="{{ url_for('admin.reject_user', user_id=u.id) }}"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Remover DEFINITIVAMENTE {{ u.username }}?');">
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="text-muted small">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

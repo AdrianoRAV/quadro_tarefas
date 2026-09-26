@@ -1,0 +1,45 @@
+<div class="task-card {% if task.assignee_id == current_user.id %}task-mine{% endif %}"
+     data-id="{{ task.id }}"
+     data-priority="{{ task.priority }}">
+
+    <div class="task-header">
+        <span class="badge bg-{% if task.priority == 'alta' %}danger{% elif task.priority == 'media' %}warning text-dark{% else %}info text-dark{% endif %} badge-sm">
+            {{ task.priority|capitalize }}
+        </span>
+        <button type="button" class="btn btn-sm btn-link p-0 edit-btn" data-id="{{ task.id }}">
+            <i class="bi bi-pencil"></i>
+        </button>
+    </div>
+
+    <div class="task-title">{{ task.title }}</div>
+
+    {% if task.description %}
+    <div class="task-desc">{{ task.description }}</div>
+    {% endif %}
+
+    <div class="task-assignee mt-2">
+        {% if task.assignee %}
+            <span class="badge {% if task.assignee_id == current_user.id %}bg-success{% else %}bg-primary-subtle text-primary-emphasis border border-primary-subtle{% endif %}">
+                <i class="bi bi-person-fill"></i>
+                {{ task.assignee.username }}
+                {% if task.assignee_id == current_user.id %}(você){% endif %}
+            </span>
+        {% else %}
+            <span class="badge bg-light text-muted border">
+                <i class="bi bi-person-dash"></i> Sem responsável
+            </span>
+        {% endif %}
+    </div>
+
+    <div class="task-footer">
+        <small class="text-muted" title="Criado por {{ task.owner.username }} em {{ task.created_at.strftime('%d/%m/%Y %H:%M') }}">
+            <i class="bi bi-person-plus"></i> criado por
+            <strong>{{ task.owner.username }}</strong>
+            {% if task.user_id == current_user.id %}(você){% endif %}
+        </small>
+        <br>
+        <small class="text-muted">
+            <i class="bi bi-clock"></i> {{ task.created_at.strftime('%d/%m %H:%M') }}
+        </small>
+    </div>
+</div>
