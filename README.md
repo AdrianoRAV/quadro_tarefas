@@ -62,7 +62,7 @@ Suporta múltiplos usuários em tempo real, autenticação, painel administrativ
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/SEU_USUARIO/quadro_tarefas.git
+https://github.com/AdrianoRAV/quadro_tarefas.gifs
 cd quadro_tarefas
 
 # 2. Crie um ambiente virtual
